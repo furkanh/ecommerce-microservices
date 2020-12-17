@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: products 
+  template:
+    metadata:
+      labels:
+        app: products 
+    spec:
+      containers:
+        - name: products 
+          image: furkanh/ecommerce-products
+          env:
+            - name: MONGO_URI
+              value: 'mongodb://products-mongo-service:27017/products'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            - name: NATS_URL
+              value: 'http://nats-service:4222'
+            - name: NATS_CLUSTER_ID
+              value: ecommerce
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: products-service
+spec:
+  type: ClusterIP
+  selector:
+    app: products 
+  ports:
+    - name: products 
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

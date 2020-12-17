@@ -1,0 +1,58 @@
+apiVersion: skaffold/v2alpha3
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+build:
+  local:
+    push: false
+  artifacts:
+    - image: furkanh/ecommerce-auth
+      context: auth 
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.js'
+            dest: .
+    - image: furkanh/ecommerce-client
+      context: client 
+      docker:
+        dockerfile: Dockerfile 
+      sync:
+        manual:
+          - src: '**/*.js'
+            dest: .
+    - image: furkanh/ecommerce-products
+      context: products 
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.js'
+            dest: .
+    - image: furkanh/ecommerce-orders
+      context: orders 
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.js'
+            dest: .
+    - image: furkanh/ecommerce-expiration
+      context: expiration 
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.js'
+            dest: .
+    - image: furkanh/ecommerce-payments
+      context: payments 
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.js'
+            dest: .
